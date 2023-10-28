@@ -1,6 +1,7 @@
 import math
 import random
 import heapq
+import time
 
 ROWS = 10
 COLUMNS = 10
@@ -166,6 +167,7 @@ def random_player():
     
 
 def brute_force(first, square = None):
+    start_time = time.time()
     options = []
     if first:
         for i in range(ROWS):
@@ -196,6 +198,11 @@ def brute_force(first, square = None):
         rand_square = options[random.randint(0, len(options))]
                     #options.append((i, j))
     print(f'Brute force move {rand_square}')
+    end_time = time.time()  # Detener el cronómetro
+    execution_time = end_time - start_time
+    with open('resultados.txt', 'a') as f:
+        f.write(f'Tiempo de ejecución Fuerza Bruta: {execution_time} segundos\n')
+
     return rand_square
     
 
@@ -238,6 +245,7 @@ class Cell:
 
 
 def heuristic(first = True):
+    start_time = time.time()
     pq = []
     for i in range(ROWS):
         for j in range(COLUMNS):
@@ -254,6 +262,11 @@ def heuristic(first = True):
         jugar = heapq.heappop(pq)
         square = jugar[1].row, jugar[1].col
     #print(f'Heuristic move {square}')
+    end_time = time.time()
+    execution_time = end_time - start_time  
+    with open('results.txt', 'a') as f:
+        f.write(f'Tiempo de ejecucion Heuristico: {execution_time} segundos\n')
+
     return square
 
 
@@ -280,7 +293,7 @@ def flag(square):
                 for c in range(max(0, j-1), min(COLUMNS, j+2)):
                     if r != i or c != j:
                         if MATRIX[r][c] == '?' and (r, c) not in FLAGGED:
-                           # print(f'Flagging {r} {c}' + " origen {}".format(square))
+                            # print(f'Flagging {r} {c}' + " origen {}".format(square))
                             sq = r, c
                             FLAGGED.add(sq)
                             return True
@@ -291,11 +304,12 @@ if __name__ == '__main__':
     create_board()
     #test()
 
-    print('Enter coordinates (ie: 0 3)')
+    print('Enter coordinates (ie: 0 4)')
 
     print("1. Para jugador aleatorio")
     print("2. Para Heurística" )
     print("3. Para Fuerza Bruta")
+    print("4. Para hacerlo 100 veces")
     input = input('> ')
 
     
@@ -311,6 +325,8 @@ if __name__ == '__main__':
             square = heuristic(first)
         elif input == '3':
             square = brute_force(first)
+        #elif input == '4':
+            #opcion que ejcute 100 veces cada algoritmo y muestre los resultados comparando
         first = False
         #square = parse_selection(input('> '))
         if not square or len(square) < 2:

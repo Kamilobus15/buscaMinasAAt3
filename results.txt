@@ -1,0 +1,15 @@
+Tiempo de ejecucion Heuristico: 0.000997304916381836 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Loss
+Loss
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Tiempo de ejecucion Heuristico: 0.0010008811950683594 segundos
+Tiempo de ejecucion Heuristico: 0.0009989738464355469 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Tiempo de ejecucion Heuristico: 0.0009975433349609375 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Tiempo de ejecucion Heuristico: 0.0 segundos
+Loss
