@@ -1,6 +1,7 @@
 import math
 import random
 import heapq
+import time
 
 ROWS = 10
 COLUMNS = 10
@@ -253,7 +254,7 @@ def heuristic(first = True):
     while square in FLAGGED:
         jugar = heapq.heappop(pq)
         square = jugar[1].row, jugar[1].col
-    #print(f'Heuristic move {square}')
+    print(f'Heuristic move {square}')
     return square
 
 
@@ -288,6 +289,7 @@ def flag(square):
 
 
 if __name__ == '__main__':
+    init = time.time_ns()
     create_board()
     #test()
 
@@ -300,10 +302,9 @@ if __name__ == '__main__':
 
     
     first = True
-
+    #input = '3'
     while True:
-        cont = 0
-        contResult = 0
+
         print(draw_board())
 
         if input == '1' or first:
@@ -312,6 +313,7 @@ if __name__ == '__main__':
             square = heuristic(first)
         elif input == '3':
             square = brute_force(first)
+
         first = False
         #square = parse_selection(input('> '))
         if not square or len(square) < 2:
@@ -332,5 +334,8 @@ if __name__ == '__main__':
                 with open('results.txt', 'a') as f:
                     f.write('Win\n')
             break
-
+    end = time.time_ns()
+    print(f' Total time is: {(end - init)}')
+    with open('timeBruteForce.txt', 'a') as f:
+        f.write(f'{(end - init)}\n')
 
