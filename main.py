@@ -302,7 +302,8 @@ if __name__ == '__main__':
     first = True
 
     while True:
-
+        cont = 0
+        contResult = 0
         print(draw_board())
 
         if input == '1' or first:
