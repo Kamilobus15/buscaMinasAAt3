@@ -261,12 +261,7 @@ def heuristic(first = True):
     while square in FLAGGED:
         jugar = heapq.heappop(pq)
         square = jugar[1].row, jugar[1].col
-    #print(f'Heuristic move {square}')
-    end_time = time.time()
-    execution_time = end_time - start_time  
-    with open('results.txt', 'a') as f:
-        f.write(f'Tiempo de ejecucion Heuristico: {execution_time} segundos\n')
-
+    print(f'Heuristic move {square}')
     return square
 
 
@@ -301,6 +296,7 @@ def flag(square):
 
 
 if __name__ == '__main__':
+    init = time.time_ns()
     create_board()
     #test()
 
@@ -314,7 +310,7 @@ if __name__ == '__main__':
 
     
     first = True
-
+    #input = '3'
     while True:
 
         print(draw_board())
@@ -325,8 +321,6 @@ if __name__ == '__main__':
             square = heuristic(first)
         elif input == '3':
             square = brute_force(first)
-        #elif input == '4':
-            #opcion que ejcute 100 veces cada algoritmo y muestre los resultados comparando
         first = False
         #square = parse_selection(input('> '))
         if not square or len(square) < 2:
@@ -347,5 +341,8 @@ if __name__ == '__main__':
                 with open('results.txt', 'a') as f:
                     f.write('Win\n')
             break
-
+    end = time.time_ns()
+    print(f' Total time is: {(end - init)}')
+    with open('timeBruteForce.txt', 'a') as f:
+        f.write(f'{(end - init)}\n')
 
