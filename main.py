@@ -2,6 +2,7 @@ import math
 import random
 import heapq
 import time
+from combinations import integrate_combination_logic
 
 ROWS = 10
 COLUMNS = 10
@@ -143,68 +144,82 @@ def reveal_mines():
 def has_won():
     return len(EXTENDED | MINES) == len(BOARD)
 
+def get_clues(matrix, rows, columns):
+    clues = {}
+    for i in range(rows):
+        for j in range(columns):
+            cell_content = matrix[i][j]
+            if cell_content not in ['?', 'F']:  # Asumimos 'F' para celdas con banderas.
+                try:
+                    # Intenta convertir el contenido de la celda a un número.
+                    clue_number = int(cell_content)
+                    clues[(i, j)] = clue_number
+                except ValueError:
+                    # Ignora las celdas que no contienen números convertibles.
+                    pass
+    return clues
+
 
 def random_player():
-    options = []
-    for i in range(ROWS):
-        for j in range(COLUMNS):
-            if MATRIX[i][j] == '?':
-                options.append((i, j))
-    rand_square = options[random.randint(0, len(options))]
-
-    p, q = rand_square
-
-    if (p >= ROWS or q >= COLUMNS) or (p < 0 or q < 0):
-        return random_player()
-
-    #print(f'Random player plays {rand_square}')
+    options = [(i, j) for i in range(ROWS) for j in range(COLUMNS) if MATRIX[i][j] == '?']
+    if not options:  # Verifica si la lista de opciones está vacía.
+        return None  # Esto puede suceder si el juego ha terminado o si hay un error en la lógica del juego.
+    rand_index = random.randint(0, len(options) - 1)  # El rango superior es len(options)-1
+    rand_square = options[rand_index]
     print(f'Random player plays {rand_square}')
     return rand_square
+
     # NO SE PUEDE REVISAR  MINES!!!
 
 
+def is_valid_move(move, matrix):
+    # Un movimiento es válido si la celda está marcada con '?' indicando que no ha sido revelada.
+    i, j = move
+    return matrix[i][j] == '?'
+
+def find_valid_move(matrix, rows, columns):
+    # Encuentra un movimiento válido entre las celdas no reveladas.
+    # Selecciona aleatoriamente entre las celdas no reveladas.
+    valid_moves = [(i, j) for i in range(rows) for j in range(columns) if matrix[i][j] == '?']
+    return random.choice(valid_moves) if valid_moves else None
 
     
 
-def brute_force(first, square = None):
+def brute_force(matrix, rows, columns, first):
     start_time = time.time()
-    options = []
+
     if first:
-        for i in range(ROWS):
-            for j in range(COLUMNS):
-                if MATRIX[i][j] != '?':
-                    options.append((i, j))
-        rand_square = options[random.randint(0, len(options))]
-        print(f'Brute force first move {rand_square}')
-        return rand_square
+        # Elige una celda aleatoria para el primer movimiento
+        move = (random.randint(0, rows-1), random.randint(0, columns-1))
+    else:
+        # Obtén las pistas del estado actual del tablero
+        clues = get_clues(matrix, rows, columns)
 
+        # Usa la lógica de combinaciones para obtener posibles movimientos seguros
+        possible_combinations = integrate_combination_logic(matrix, clues, rows, columns)
 
+        # Selecciona una combinación segura para hacer un movimiento
+        move = None
+        for combination in possible_combinations:
+            for potential_move in combination:
+                if matrix[potential_move[0]][potential_move[1]] == '?':
+                    move = potential_move
+                    break
+            if move:
+                break
 
-    else: #solo agrega a las opciones las casillas que estan al lado de las casillas que ya se han seleccionado
-        for i in range(ROWS):
-            for j in range(COLUMNS):
-                if MATRIX[i][j] != '?':
-                    flag((i, j))
-                    for p in range(max(0, i - 1), min(ROWS, i + 2)):
-                        for q in range(max(0, j - 1), min(COLUMNS, j + 2)):
-                            if p != i or q != j:
-                                if MATRIX[p][q] == '?':
-                                    options.append((p, q))
-    if(options == []):
-        return random_player()
+        # Si no se encontraron combinaciones seguras, selecciona una celda aleatoria no revelada
+        if not move:
+            move = find_valid_move(matrix, rows, columns)
 
-    rand_square = options[random.randint(0, len(options))]
-    while rand_square in FLAGGED:
-        rand_square = options[random.randint(0, len(options))]
-                    #options.append((i, j))
-    print(f'Brute force move {rand_square}')
-    end_time = time.time()  # Detener el cronómetro
+    # Registra el tiempo de ejecución
+    end_time = time.time()
     execution_time = end_time - start_time
     with open('resultados.txt', 'a') as f:
         f.write(f'Tiempo de ejecución Fuerza Bruta: {execution_time} segundos\n')
 
-    return rand_square
-    
+    print(f'Brute force selected move {move} - execution time: {execution_time} seconds')
+    return move
 
 
 #Para la heuristica sera por los que tengan las menores sumas de minas alrededor
@@ -320,8 +335,8 @@ if __name__ == '__main__':
         elif input == '2':
             square = heuristic(first)
         elif input == '3':
-            square = brute_force(first)
-        first = False
+            square = brute_force(MATRIX, ROWS, COLUMNS, first)
+            first = False
         #square = parse_selection(input('> '))
         if not square or len(square) < 2:
             print('Unable to parse indicies, try again...')
